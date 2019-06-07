@@ -8,9 +8,13 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE DefaultSignatures #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+#if __GLASGOW_HASKELL__ >= 800
+{-# LANGUAGE PatternSynonyms #-}
+{-# LANGUAGE ViewPatterns #-}
+#endif
 --------------------------------------------------------------------
 -- |
--- Copyright :  (c) Edward Kmett 2013-2014, (c) Paul Wilson 2012
+-- Copyright :  (c) Edward Kmett 2013-2019, (c) Paul Wilson 2012
 -- License   :  BSD3
 -- Maintainer:  Edward Kmett <ekmett@gmail.com>
 -- Stability :  experimental
@@ -34,6 +38,20 @@ module Data.Aeson.Lens
   , nth, values
   -- * Decoding
   , AsJSON(..)
+  , _JSON'
+  -- * Pattern Synonyms
+#if __GLASGOW_HASKELL__ >= 800
+  , pattern JSON
+  , pattern Value_
+  , pattern Number_
+  , pattern Double
+  , pattern Integer
+  , pattern Integral
+  , pattern Primitive
+  , pattern Bool_
+  , pattern String_
+  , pattern Null_
+#endif
   ) where
 
 import Control.Applicative
@@ -367,9 +385,12 @@ strictTextUtf8 = iso StrictText.encodeUtf8 StrictText.decodeUtf8
 lazyTextUtf8 :: Iso' LazyText.Text Lazy.ByteString
 lazyTextUtf8 = iso LazyText.encodeUtf8 LazyText.decodeUtf8
 
+_JSON' :: (AsJSON t, FromJSON a, ToJSON a) => Prism' t a
+_JSON' = _JSON
+
 class AsJSON t where
   -- | '_JSON' is a 'Prism' from something containing JSON to something encoded in that structure
-  _JSON :: (FromJSON a, ToJSON a) => Prism' t a
+  _JSON :: (FromJSON a, ToJSON b) => Prism t t a b
 
 instance AsJSON Strict.ByteString where
   _JSON = lazy._JSON
@@ -453,3 +474,49 @@ instance Plated Value where
   plate f (Array a) = Array <$> traverse f a
   plate _ xs = pure xs
   {-# INLINE plate #-}
+
+------------------------------------------------------------------------------
+-- Pattern Synonyms
+------------------------------------------------------------------------------
+
+#if __GLASGOW_HASKELL__ >= 800
+pattern JSON :: (FromJSON a, ToJSON a, AsJSON t) => () => a -> t
+pattern JSON a <- (preview _JSON -> Just a) where
+  JSON a = _JSON # a
+
+pattern Value_ :: (FromJSON a, ToJSON a) => () => a -> Value
+pattern Value_ a <- (fromJSON -> Success a) where
+  Value_ a = toJSON a
+
+pattern Number_ :: AsNumber t => Scientific -> t
+pattern Number_ n <- (preview _Number -> Just n) where
+  Number_ n = _Number # n
+
+pattern Double :: AsNumber t => Double -> t
+pattern Double d <- (preview _Double -> Just d) where
+  Double d = _Double # d
+
+pattern Integer :: AsNumber t => Integer -> t
+pattern Integer i <- (preview _Integer -> Just i) where
+  Integer i = _Integer # i
+
+pattern Integral :: (AsNumber t, Integral a) => a -> t
+pattern Integral d <- (preview _Integral -> Just d) where
+  Integral d = _Integral # d
+
+pattern Primitive :: AsPrimitive t => Primitive -> t
+pattern Primitive p <- (preview _Primitive -> Just p) where
+  Primitive p = _Primitive # p
+
+pattern Bool_ :: AsPrimitive t => Bool -> t
+pattern Bool_ b <- (preview _Bool -> Just b) where
+  Bool_ b = _Bool # b
+
+pattern String_ :: AsPrimitive t => Text -> t
+pattern String_ p <- (preview _String -> Just p) where
+  String_ p = _String # p
+
+pattern Null_ :: AsPrimitive t => t
+pattern Null_ <- (preview _Null -> Just ()) where
+  Null_ = _Null # ()
+#endif
