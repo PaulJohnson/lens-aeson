@@ -1,3 +1,12 @@
+1.1 [????.??.??]
+----------------
+* Generalize the type of `_JSON` from `Prism' t a` to `Prism t t a b`. If you
+  wish to continue to use the less general type, use the newly added `_JSON'`
+  prism.
+* Add pattern synonyms corresponding to the `Prism`s that `lens-aeson`
+  provides.
+* Fix the test suite on 32-bit architectures.
+
 1.0.2
 -----
 * Support `doctest-0.12`
