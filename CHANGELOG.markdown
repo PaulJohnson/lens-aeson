@@ -1,4 +1,4 @@
-1.1 [????.??.??]
+1.1 [2019.09.26]
 ----------------
 * Generalize the type of `_JSON` from `Prism' t a` to `Prism t t a b`. If you
   wish to continue to use the less general type, use the newly added `_JSON'`
