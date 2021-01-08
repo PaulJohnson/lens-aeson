@@ -1,7 +1,7 @@
 lens-aeson
 ==========
 
-[![Hackage](https://img.shields.io/hackage/v/lens-aeson.svg)](https://hackage.haskell.org/package/lens-aeson) [![Build Status](https://secure.travis-ci.org/lens/lens-aeson.svg)](http://travis-ci.org/lens/lens-aeson)
+[![Hackage](https://img.shields.io/hackage/v/lens-aeson.svg)](https://hackage.haskell.org/package/lens-aeson) [![Build Status](https://github.com/lens/lens-aeson/workflows/Haskell-CI/badge.svg)](https://github.com/lens/lens-aeson/actions?query=workflow%3AHaskell-CI)
 
 The goal of `lens-aeson` is to provide traversals and prisms for
 the [Aeson](http://hackage.haskell.org/package/aeson) library's

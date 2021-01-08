@@ -27,13 +27,10 @@ synopsis:      Law-abiding lenses for aeson
 description:   Law-abiding lenses for aeson.
 
 extra-source-files:
-  .travis.yml
   .ghci
   .gitignore
   .hlint.yaml
   .vim.custom
-  travis/cabal-apt-install
-  travis/config
   AUTHORS.markdown
   README.markdown
   CHANGELOG.markdown
