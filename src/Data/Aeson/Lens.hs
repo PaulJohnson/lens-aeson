@@ -281,7 +281,7 @@ nonNull = prism id (\v -> if isn't _Null v then Right v else Left v)
 -- | Treat a 'Null' value as equivalent to @Nothing@.
 --
 -- >>> Number 123 ^? nullIsNothing _Integer
--- Just 123
+-- Just (Just 123)
 -- 
 -- >>> Null ^? nullIsNothing _Integer
 -- Just Nothing
