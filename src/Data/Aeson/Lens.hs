@@ -30,6 +30,7 @@ module Data.Aeson.Lens
   , _Integral
   , nonNull
   , nullIsNothing
+  , nullIsDefault
   -- * Primitive
   , Primitive(..)
   , AsPrimitive(..)
@@ -302,6 +303,24 @@ nullIsNothing p = withPrism p $ \bk fw ->
       fw1 Null = Right Nothing
       fw1 x = Just <$> fw x
    in prism bk1 fw1
+
+
+-- | Treat a 'Null' value as a default
+--
+-- >>> Number 123 ^? nullIsDefault 0 _Integer
+-- Just 123
+--
+-- >>> Null ^? nullIsDefault 0 _Integer
+-- Just 0
+--
+-- >>> "xyz" ^? nullIsDefault 0 _Integer
+-- Nothing
+nullIsDefault :: q -> Prism' Value q -> Prism' Value q
+nullIsDefault q p = withPrism p $ \bk fw ->
+    let
+        fw1 Null = Right q
+        fw1 x = fw x
+    in prism bk fw1
 
 
 ------------------------------------------------------------------------------
